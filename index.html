@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusGaming - Tienda de Videojuegos</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --primary-accent: #6366f1;
+            --primary-hover: #4f46e5;
+            --whatsapp-color: #25d366;
+            --whatsapp-hover: #128c7e;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Utilidades personalizadas */
+        .text-accent { color: var(--primary-accent); }
+        .bg-accent { background-color: var(--primary-accent); }
+        
+        /* Navbar */
+        .navbar-custom {
+            background-color: rgba(15, 23, 42, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #334155;
+        }
+
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Product Cards */
+        .product-card {
+            background-color: var(--bg-card);
+            border: 1px solid #334155;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-accent);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+        }
+
+        .product-image-container {
+            position: relative;
+            padding-top: 125%; /* Aspect Ratio para caratulas */
+            overflow: hidden;
+            background-color: #0f172a;
+        }
+
+        .product-image-container.console-img {
+            padding-top: 100%; /* Cuadrado para consolas */
+        }
+
+        .product-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+
+        .platform-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 0.35em 0.65em;
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+
+        .type-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.7rem;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.35em 0.65em;
+            border-radius: 0.25rem;
+            z-index: 2;
+        }
+
+        /* Platform Colors */
+        .bg-ps5 { background-color: #00439c; color: white; }
+        .bg-ps4 { background-color: #003791; color: white; }
+        .bg-xbox { background-color: #107c10; color: white; }
+        .bg-nintendo { background-color: #e60012; color: white; }
+
+        /* Botón WhatsApp */
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-whatsapp:hover {
+            background-color: var(--whatsapp-hover);
+            color: white;
+        }
+
+        /* Modal personalizado para tema oscuro */
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid #334155;
+            color: white;
+        }
+        
+        .modal-header, .modal-footer {
+            border-color: #334155;
+        }
+
+        .form-control, .form-select {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: #0f172a;
+            color: white;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        /* Filtros */
+        .filter-btn.active {
+            background-color: var(--primary-accent) !important;
+            color: white !important;
+            border-color: var(--primary-accent) !important;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 fst-italic" href="#">
+                <i class="fa-solid fa-gamepad text-accent me-2"></i>Nexus<span class="text-accent">Gaming</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <form class="d-flex ms-auto mt-3 mt-lg-0 position-relative w-100" style="max-width: 400px;" onsubmit="event.preventDefault();">
+                    <i class="fa-solid fa-search position-absolute top-50 translate-middle-y ms-3 text-secondary"></i>
+                    <input class="form-control rounded-pill ps-5" type="search" id="searchInput" placeholder="Buscar juegos o consolas..." aria-label="Search">
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5">
+        <!-- Hero Section -->
+        <div class="hero-banner mb-5">
+            <h1 class="display-5 fw-bolder mb-3 text-white">Tu Portal al Mundo Gaming</h1>
+            <p class="lead text-light opacity-75 mb-0">Explora nuestro catálogo, contáctanos al instante por WhatsApp y asegura tu pedido de inmediato.</p>
+        </div>
+
+        <div class="row align-items-center mb-4 g-3">
+            <div class="col-md-auto d-flex align-items-center text-secondary">
+                <i class="fa-solid fa-filter me-2 text-accent"></i>
+                <span class="fw-semibold">Filtros:</span>
+            </div>
+            
+            <div class="col-md-auto">
+                <div class="btn-group w-100" role="group" id="typeFilters">
+                    <button type="button" class="btn btn-outline-secondary filter-btn filter-type active" data-filter="Todos">Todos</button>
+                    <button type="button" class="btn btn-outline-secondary filter-btn filter-type" data-filter="Juego">Juegos</button>
+                    <button type="button" class="btn btn-outline-secondary filter-btn filter-type" data-filter="Consola">Consolas</button>
+                </div>
+            </div>
+
+            <div class="col-md-auto ms-md-auto">
+                <select class="form-select rounded-pill" id="platformFilter">
+                    <option value="Todas">Todas las plataformas</option>
+                    <option value="PS5">PlayStation 5</option>
+                    <option value="PS4">PlayStation 4</option>
+                    <option value="XBOX ONE">Xbox One</option>
+                    <option value="XBOX SERIES X">Xbox Series X</option>
+                    <option value="NINTENDO SWITCH">Nintendo Switch</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Contenedor del Catálogo -->
+        <div class="row g-4" id="catalog-container">
+            <!-- Los productos se inyectarán aquí mediante JavaScript -->
+        </div>
+
+        <div id="no-results" class="text-center py-5 d-none">
+            <i class="fa-solid fa-ghost fs-1 text-secondary mb-3"></i>
+            <h3>No se encontraron productos</h3>
+            <p class="text-secondary">Intenta con otra búsqueda o cambia los filtros.</p>
+        </div>
+    </main>
+
+    <!-- Modal de Pedido WhatsApp -->
+    <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header border-bottom border-secondary">
+                    <h5 class="modal-title d-flex align-items-center fw-bold" id="orderModalLabel">
+                        <i class="fa-brands fa-whatsapp text-success me-2 fs-4"></i>
+                        Contactar por Equipo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    
+                    <!-- Resumen del Producto -->
+                    <div class="d-flex align-items-center bg-dark p-3 rounded-3 border border-secondary mb-4">
+                        <img id="modalProductImage" src="" alt="" class="rounded border border-secondary" style="width: 60px; height: 60px; object-fit: cover;">
+                        <div class="ms-3">
+                            <h6 class="mb-1 fw-bold" id="modalProductName">Nombre del Producto</h6>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge" id="modalProductPlatform">Plataforma</span>
+                                <span class="text-accent fw-bold" id="modalProductPrice">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de Consulta -->
+                    <form id="whatsappForm">
+                        <input type="hidden" id="modalProductId">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-light">¿Qué deseas consultar?</label>
+                            <select class="form-select" id="inquiryType">
+                                <option value="¿Está disponible este producto?">Saber si está disponible</option>
+                                <option value="¿Cuántas unidades tienen en stock?">Preguntar cuántas unidades quedan</option>
+                                <option value="¿Qué métodos de pago aceptan para este producto?">Métodos de pago</option>
+                                <option value="Otro">Otro (Escribir mensaje personalizado)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-light">Mensaje personalizado (Opcional)</label>
+                            <textarea class="form-control" id="customMessage" rows="3" placeholder="Escribe aquí cualquier duda adicional..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-top border-secondary bg-dark">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-whatsapp px-4 d-flex align-items-center" onclick="sendWhatsApp()">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Enviar a WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle (incluye Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // CONFIGURACIÓN DE WHATSAPP (Coloca aquí tu número con código de país, sin el '+')
+        const NUMERO_WHATSAPP = "1234567890"; 
+
+        // Base de Datos Mockeada (Catálogo)
+        const catalogData = [
+            // JUEGOS PS5
+            { id: 'g1', type: 'Juego', name: 'God of War Ragnarok', platform: 'PS5', price: 69.99, image: 'https://cdn.mobygames.com/covers/11182321-god-of-war-ragnarok-playstation-5-front-cover.jpg' },
+            { id: 'g2', type: 'Juego', name: 'Spider-Man 2', platform: 'PS5', price: 69.99, image: 'https://cdn.mobygames.com/covers/18032747-marvel-spider-man-2-launch-edition-playstation-5-front-cover.jpg' },
+            // JUEGOS PS4
+            { id: 'g3', type: 'Juego', name: 'The Last of Us Part II', platform: 'PS4', price: 39.99, image: 'https://cdn.mobygames.com/covers/9803854-the-last-of-us-part-ii-playstation-4-front-cover.jpg' },
+            { id: 'g4', type: 'Juego', name: 'Ghost of Tsushima', platform: 'PS4', price: 29.99, image: 'https://cdn.mobygames.com/covers/18724818-ghost-of-tsushima-playstation-4-front-cover.jpg' },
+            // JUEGOS XBOX
+            { id: 'g5', type: 'Juego', name: 'Halo Infinite', platform: 'XBOX ONE', price: 59.99, image: 'https://cdn.mobygames.com/covers/11144043-halo-infinite-campaign-xbox-one-front-cover.jpg' },
+            { id: 'g6', type: 'Juego', name: 'Forza Horizon 5', platform: 'XBOX SERIES X', price: 69.99, image: 'https://m.media-amazon.com/images/I/81KN5j690FL._SL1500_.jpg' },
+            // JUEGOS SWITCH
+            { id: 'g7', type: 'Juego', name: 'Zelda: Tears of the Kingdom', platform: 'NINTENDO SWITCH', price: 69.99, image: 'https://m.media-amazon.com/images/I/81BmHPrKoLL._SL1500_.jpg' },
+            { id: 'g8', type: 'Juego', name: 'Mario Kart 8 Deluxe', platform: 'NINTENDO SWITCH', price: 59.99, image: 'https://cdn.mobygames.com/covers/10074207-mario-kart-8-deluxe-nintendo-switch-front-cover.jpg' },
+            
+            // CONSOLAS
+            { id: 'c1', type: 'Consola', name: 'PlayStation 5', platform: 'PS5', price: 499.99, image: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&q=80' },
+            { id: 'c2', type: 'Consola', name: 'PlayStation 4 Slim', platform: 'PS4', price: 299.99, image: 'https://m.media-amazon.com/images/I/51t0bPwu8uL._AC_SL1000_.jpg' },
+            { id: 'c3', type: 'Consola', name: 'Xbox Series X', platform: 'XBOX SERIES X', price: 499.99, image: 'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=600&q=80' },
+            { id: 'c4', type: 'Consola', name: 'Nintendo Switch OLED', platform: 'NINTENDO SWITCH', price: 349.99, image: 'https://images.unsplash.com/photo-1617096200347-cb04ae810b1d?w=600&q=80' },
+        ];
+
+        // Variables de estado
+        let currentFilterType = 'Todos';
+        let currentFilterPlatform = 'Todas';
+        let currentSearchTerm = '';
+        let orderModal = null; // Instancia del modal de Bootstrap
+
+        // Inicialización al cargar el DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            orderModal = new bootstrap.Modal(document.getElementById('orderModal'));
+            renderCatalog(catalogData);
+            setupEventListeners();
+        });
+
+        function getPlatformColorClass(platform) {
+            if (platform.includes('PS5')) return 'bg-ps5';
+            if (platform.includes('PS4')) return 'bg-ps4';
+            if (platform.includes('XBOX')) return 'bg-xbox';
+            if (platform.includes('SWITCH')) return 'bg-nintendo';
+            return 'bg-secondary';
+        }
+
+        function renderCatalog(dataToRender) {
+            const container = document.getElementById('catalog-container');
+            const noResults = document.getElementById('no-results');
+            
+            container.innerHTML = '';
+
+            if (dataToRender.length === 0) {
+                container.classList.add('d-none');
+                noResults.classList.remove('d-none');
+                return;
+            }
+
+            container.classList.remove('d-none');
+            noResults.classList.add('d-none');
+
+            dataToRender.forEach(product => {
+                const isConsole = product.type === 'Consola';
+                const aspectClass = isConsole ? 'console-img' : '';
+                const platformClass = getPlatformColorClass(product.platform);
+
+                const cardHTML = `
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-image-container ${aspectClass}">
+                                <span class="type-badge text-light">${product.type}</span>
+                                <span class="platform-badge ${platformClass}">${product.platform}</span>
+                                <img src="${product.image}" alt="${product.name}" class="product-img" loading="lazy">
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                                <h5 class="card-title fw-bold mb-2 text-truncate" title="${product.name}">${product.name}</h5>
+                                <div class="mt-auto pt-3 d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bolder">$${product.price.toFixed(2)}</span>
+                                </div>
+                                <button class="btn btn-whatsapp w-100 mt-3 d-flex align-items-center justify-content-center" onclick="openWhatsAppModal('${product.id}')">
+                                    <i class="fa-brands fa-whatsapp me-2 fs-5"></i> Consultar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        function applyFilters() {
+            const filteredData = catalogData.filter(product => {
+                const matchSearch = product.name.toLowerCase().includes(currentSearchTerm.toLowerCase());
+                const matchType = currentFilterType === 'Todos' || product.type === currentFilterType;
+                
+                // Mapeo flexible para plataforma
+                let matchPlatform = currentFilterPlatform === 'Todas';
+                if (!matchPlatform) {
+                    if (currentFilterPlatform.includes('XBOX') && product.platform.includes('XBOX')) {
+                         matchPlatform = true; // Agrupar Xbox
+                    } else {
+                         matchPlatform = product.platform === currentFilterPlatform;
+                    }
+                }
+
+                return matchSearch && matchType && matchPlatform;
+            });
+
+            renderCatalog(filteredData);
+        }
+
+        function setupEventListeners() {
+            // Buscador
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                currentSearchTerm = e.target.value;
+                applyFilters();
+            });
+
+            // Filtro de Tipos (Botones)
+            const typeBtns = document.querySelectorAll('.filter-type');
+            typeBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    // Remover activo de todos
+                    typeBtns.forEach(b => b.classList.remove('active'));
+                    // Activar el clickeado
+                    e.target.classList.add('active');
+                    
+                    currentFilterType = e.target.getAttribute('data-filter');
+                    applyFilters();
+                });
+            });
+
+            // Filtro de Plataforma (Select)
+            document.getElementById('platformFilter').addEventListener('change', (e) => {
+                currentFilterPlatform = e.target.value;
+                applyFilters();
+            });
+        }
+
+        function openWhatsAppModal(productId) {
+            const product = catalogData.find(p => p.id === productId);
+            if (!product) return;
+
+            // Llenar datos del modal
+            document.getElementById('modalProductId').value = product.id;
+            document.getElementById('modalProductName').textContent = product.name;
+            document.getElementById('modalProductPrice').textContent = `$${product.price.toFixed(2)}`;
+            
+            const platformBadge = document.getElementById('modalProductPlatform');
+            platformBadge.textContent = product.platform;
+            platformBadge.className = `badge ${getPlatformColorClass(product.platform)}`;
+            
+            document.getElementById('modalProductImage').src = product.image;
+            
+            // Resetear formulario
+            document.getElementById('inquiryType').value = '¿Está disponible este producto?';
+            document.getElementById('customMessage').value = '';
+
+            // Mostrar Modal
+            orderModal.show();
+        }
+
+        function sendWhatsApp() {
+            const productId = document.getElementById('modalProductId').value;
+            const product = catalogData.find(p => p.id === productId);
+            
+            if (!product) return;
+
+            const inquiryType = document.getElementById('inquiryType').value;
+            const customMessage = document.getElementById('customMessage').value.trim();
+
+            // Construir el mensaje
+            let message = `¡Hola! 👋 Vengo desde el catálogo web y me interesa este producto:\n\n`;
+            message += `🎮 *Producto:* ${product.name}\n`;
+            message += `🏷️ *Tipo:* ${product.type}\n`;
+            message += `💿 *Plataforma:* ${product.platform}\n`;
+            message += `💵 *Precio referencial:* $${product.price.toFixed(2)}\n\n`;
+            
+            if (inquiryType !== 'Otro') {
+                message += `❓ *Consulta:* ${inquiryType}\n`;
+            }
+            
+            if (customMessage) {
+                message += `💬 *Mensaje:* ${customMessage}\n`;
+            }
+
+            // Codificar para URL
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodedMessage}`;
+            
+            // Abrir WhatsApp en nueva pestaña
+            window.open(whatsappUrl, '_blank');
+            
+            // Cerrar el modal
+            orderModal.hide();
+        }
+    </script>
+</body>
+</html>
